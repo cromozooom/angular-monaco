@@ -1,0 +1,6 @@
+@use "styles/custom.scss";
+$primary: #ff5733; // Change primary color
+$font-family-sans-serif: "Arial", sans-serif;
+
+// // Import Bootstrap
+@use "../node_modules/bootstrap/scss/bootstrap";
