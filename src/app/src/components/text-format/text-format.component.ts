@@ -63,6 +63,11 @@ export class TextFormatComponent implements OnInit {
   ngOnInit(): void {
     this.registerCustomLanguage();
     this.registerHoverProvider();
+    this.registerCompletionProvider();
+    this.initializeEditor();
+  }
+
+  ngAfterViewInit(): void {
     this.initializeEditor();
   }
 
@@ -159,57 +164,27 @@ export class TextFormatComponent implements OnInit {
     });
   }
 
-  _registerHoverProvider(): void {
-    monaco.languages.registerHoverProvider('customLanguage', {
-      provideHover: (model, position) => {
-        const word = model.getWordAtPosition(position);
-        if (!word) {
-          return null;
+  registerCompletionProvider(): void {
+    monaco.languages.registerCompletionItemProvider('customLanguage', {
+      triggerCharacters: ["'"], // Trigger suggestions when typing a single quote
+      provideCompletionItems: (model, position) => {
+        const lineContent = model.getLineContent(position.lineNumber);
+        const regex = /GET\('([^']*)$/; // Match GET('...') up to the cursor position
+        const match = lineContent.match(regex);
+
+        if (match) {
+          // Generate suggestions from fieldsValidWIthData
+          const suggestions = this.fieldsValidWIthData.map((field: any) => ({
+            label: field.name,
+            kind: monaco.languages.CompletionItemKind.Variable, // Suggestion type
+            insertText: field.name, // Text to insert
+            detail: field.value, // Additional info about the field
+          }));
+
+          return { suggestions };
         }
 
-        const textUntilPosition = model.getValueInRange({
-          startLineNumber: position.lineNumber,
-          startColumn: 1,
-          endLineNumber: position.lineNumber,
-          endColumn: position.column,
-        });
-
-        // Check if the hovered word is inside GET('...')
-        const match = textUntilPosition.match(/GET\('([^']*)/);
-        if (match && match[1] === word.word) {
-          // Find the corresponding field data
-          const fieldData = this.fieldsValidWIthData.find(
-            (field: any) => field.name === word.word
-          );
-
-          if (fieldData) {
-            return {
-              range: new monaco.Range(
-                position.lineNumber,
-                word.startColumn,
-                position.lineNumber,
-                word.endColumn
-              ),
-              contents: [
-                { value: `**Variable:** ${fieldData.name}` },
-                { value: `**Type:** ${fieldData.type}` },
-                { value: `**Description:** ${fieldData.value}` },
-              ],
-            };
-          } else {
-            return {
-              range: new monaco.Range(
-                position.lineNumber,
-                word.startColumn,
-                position.lineNumber,
-                word.endColumn
-              ),
-              contents: [{ value: `no data available` }],
-            };
-          }
-        }
-
-        return null;
+        return { suggestions: [] }; // No suggestions if not inside GET('')
       },
     });
   }
@@ -255,7 +230,9 @@ export class TextFormatComponent implements OnInit {
             endPosition.column
           ),
           options: {
-            inlineClassName: this.fieldsValid.includes(variable)
+            inlineClassName: this.fieldsValidWIthData.some(
+              (field: any) => field.name === variable
+            )
               ? 'text-bg-success' // Apply the .valid class if the variable is valid
               : 'text-bg-info', // Apply the .mtkb class otherwise
           },
