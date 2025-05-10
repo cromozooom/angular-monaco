@@ -31,8 +31,11 @@ export class TextFormatComponent implements OnInit {
     'DYNAMIC_clientcategory',
   ];
 
+  private currentDecorations: string[] = []; // Track current decorations
+
   ngOnInit(): void {
     this.registerCustomLanguage();
+    this.registerHoverProvider();
     this.initializeEditor();
   }
 
@@ -58,6 +61,43 @@ export class TextFormatComponent implements OnInit {
         { token: 'custom-variable', foreground: '000000', fontStyle: 'bold' },
       ],
       colors: {},
+    });
+  }
+
+  registerHoverProvider(): void {
+    monaco.languages.registerHoverProvider('customLanguage', {
+      provideHover: (model, position) => {
+        const word = model.getWordAtPosition(position);
+        if (!word) {
+          return null;
+        }
+
+        const textUntilPosition = model.getValueInRange({
+          startLineNumber: position.lineNumber,
+          startColumn: 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
+
+        // Check if the hovered word is inside GET('...')
+        const match = textUntilPosition.match(/GET\('([^']*)/);
+        if (match && match[1] === word.word) {
+          return {
+            range: new monaco.Range(
+              position.lineNumber,
+              word.startColumn,
+              position.lineNumber,
+              word.endColumn
+            ),
+            contents: [
+              { value: `**Variable:** ${word.word}` },
+              { value: `Click [here](#) for more details.` },
+            ],
+          };
+        }
+
+        return null;
+      },
     });
   }
 
@@ -110,7 +150,10 @@ export class TextFormatComponent implements OnInit {
       }
     }
 
-    // Apply the decorations to the editor
-    this.editor.deltaDecorations([], decorations);
+    // Update decorations only if they have changed
+    this.currentDecorations = this.editor.deltaDecorations(
+      this.currentDecorations,
+      decorations
+    );
   }
 }
