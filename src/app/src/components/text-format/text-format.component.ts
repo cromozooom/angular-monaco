@@ -20,12 +20,39 @@ export class TextFormatComponent implements OnInit {
   editor!: monaco.editor.IStandaloneCodeEditor;
 
   // Valid fields
+  fieldsValidWIthData: any = [
+    {
+      name: 'wdxTotalAssets',
+      type: 450,
+      value: 'wdx Total Assets',
+    },
+    {
+      name: 'DYNAMIC_servicetypes',
+      type: 'string',
+      value: 'Service types',
+    },
+    {
+      name: 'wdxFinancialOtherLiabilitiesAmount',
+      type: 'string',
+      value: 'wdx Financial Other Liabilities Amount',
+    },
+    {
+      name: 'wdxNetIncome',
+      type: 'string',
+      value: 'wdx Net Income',
+    },
+    {
+      name: 'DYNAMIC_clientcategory',
+      type: 'string',
+      value: 'DYNAMIC client category',
+    },
+  ];
   fieldsValid: string[] = ['wdxTotalAssets', 'DYNAMIC_servicetypes'];
 
   // All fields
   fields: string[] = [
     'wdxTotalAssets',
-    'wdxFinancialsOtherLiabilitiesAmount',
+    'wdxFinancialOtherLiabilitiesAmount',
     'wdxNetIncome',
     'DYNAMIC_servicetypes',
     'DYNAMIC_clientcategory',
@@ -72,6 +99,74 @@ export class TextFormatComponent implements OnInit {
           return null;
         }
 
+        const lineContent = model.getLineContent(position.lineNumber);
+        const regex = /GET\('([^']+)'\)/g;
+        let match;
+        let matchedVariable = null;
+
+        // Find all matches of GET('...') in the line
+        while ((match = regex.exec(lineContent)) !== null) {
+          const variable = match[1]; // Extract the variable inside GET('...')
+          const startIndex = match.index + 5; // Start index of the variable
+          const endIndex = startIndex + variable.length; // End index of the variable
+
+          // Check if the hovered word matches the variable
+          if (
+            position.column >= startIndex + 1 &&
+            position.column <= endIndex + 1 &&
+            word.word === variable
+          ) {
+            matchedVariable = variable;
+            break;
+          }
+        }
+
+        if (matchedVariable) {
+          // Find the corresponding field data
+          const fieldData = this.fieldsValidWIthData.find(
+            (field: any) => field.name === matchedVariable
+          );
+
+          if (fieldData) {
+            return {
+              range: new monaco.Range(
+                position.lineNumber,
+                word.startColumn,
+                position.lineNumber,
+                word.endColumn
+              ),
+              contents: [
+                { value: `**Variable:** ${fieldData.name}` },
+                { value: `**Type:** ${fieldData.type}` },
+                { value: `**Description:** ${fieldData.value}` },
+              ],
+            };
+          } else {
+            return {
+              range: new monaco.Range(
+                position.lineNumber,
+                word.startColumn,
+                position.lineNumber,
+                word.endColumn
+              ),
+              contents: [{ value: `no data available` }],
+            };
+          }
+        }
+
+        return null;
+      },
+    });
+  }
+
+  _registerHoverProvider(): void {
+    monaco.languages.registerHoverProvider('customLanguage', {
+      provideHover: (model, position) => {
+        const word = model.getWordAtPosition(position);
+        if (!word) {
+          return null;
+        }
+
         const textUntilPosition = model.getValueInRange({
           startLineNumber: position.lineNumber,
           startColumn: 1,
@@ -82,18 +177,36 @@ export class TextFormatComponent implements OnInit {
         // Check if the hovered word is inside GET('...')
         const match = textUntilPosition.match(/GET\('([^']*)/);
         if (match && match[1] === word.word) {
-          return {
-            range: new monaco.Range(
-              position.lineNumber,
-              word.startColumn,
-              position.lineNumber,
-              word.endColumn
-            ),
-            contents: [
-              { value: `**Variable:** ${word.word}` },
-              { value: `Click [here](#) for more details.` },
-            ],
-          };
+          // Find the corresponding field data
+          const fieldData = this.fieldsValidWIthData.find(
+            (field: any) => field.name === word.word
+          );
+
+          if (fieldData) {
+            return {
+              range: new monaco.Range(
+                position.lineNumber,
+                word.startColumn,
+                position.lineNumber,
+                word.endColumn
+              ),
+              contents: [
+                { value: `**Variable:** ${fieldData.name}` },
+                { value: `**Type:** ${fieldData.type}` },
+                { value: `**Description:** ${fieldData.value}` },
+              ],
+            };
+          } else {
+            return {
+              range: new monaco.Range(
+                position.lineNumber,
+                word.startColumn,
+                position.lineNumber,
+                word.endColumn
+              ),
+              contents: [{ value: `no data available` }],
+            };
+          }
         }
 
         return null;

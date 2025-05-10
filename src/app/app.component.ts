@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import * as monaco from 'monaco-editor';
-import { TextFormatComponent } from './src/app/components/text-format/text-format.component';
+import { TextFormatComponent } from './src/components/text-format/text-format.component';
 
 @Component({
   selector: 'app-root',
