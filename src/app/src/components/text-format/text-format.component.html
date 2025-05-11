@@ -1,18 +1,47 @@
-<div class="d-flex w-100 h-100 flex-column p-2">
-  <div class="container-fluid flex-grow-1">
-    <div class="row h-100">
-      <div class="col-6">
-        test
-        <div class="d-flex gap-2">
-          <div class="text-bg-success rounded px-2">Valid</div>
-          <div class="text-bg-info rounded px-2">Field</div>
-          <div class="text-bg-info rounded px-2">Field</div>
+<div class="w-100 h-100 overflow-hidden d-flex flex-column">
+  <div class="border-bottom">
+    <div class="d-flex gap-2 p-2">
+      <div class="text-bg-success rounded px-2">current form</div>
+      <div class="text-bg-warning rounded px-2">Hosted fields</div>
+      <div class="text-bg-danger rounded px-2">SPX Error</div>
+    </div>
+  </div>
+  <div class="flex-grow-1 d-flex overflow-hidden">
+    <div class="w-50 flex-grow-1 overflow-hidden">
+      <div class="d-flex overflow-hidden h-100">
+        <div class="w-50 h-100 overflow-hidden">
+          <div class="d-flex flex-column gap-2 w-100 h-100 overflow-auto">
+            <strong class="p-2 border-bottom sticky-top bg-white shadow-sm"
+              >Current form</strong
+            >
+            <ul class="list-unstyled">
+              <li *ngFor="let field of fieldsValidWithData">
+                <span class="rounded px-2 text-bg-light">
+                  {{ field.name }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="w-50 h-100 overflow-hidden">
+          <div class="d-flex flex-column gap-2 w-100 h-100 overflow-auto">
+            <strong class="p-2 border-bottom sticky-top bg-white shadow-sm"
+              >Other forms</strong
+            >
+            <ul class="list-unstyled">
+              <li *ngFor="let field of otherFieldsValidWithData">
+                <span class="rounded px-2 text-bg-light">
+                  {{ field.name }}
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="col-6">
-        <div class="w-100 h-100">
-          <div class="editor-container w-100 h-100" #editorContainer></div>
-        </div>
+    </div>
+    <div class="w-50 flex-grow-1 p-2 d-flex">
+      <div class="w-100 flex-grow-1">
+        <div class="editor-container w-100 h-100" #editorContainer></div>
       </div>
     </div>
   </div>
