@@ -27494,10 +27494,15 @@ export class TextFormatComponent implements OnInit {
       value: 'ContactAddresses',
     },
   ];
+  allFields: any = [];
 
   private currentDecorations: string[] = []; // Track current decorations
 
   ngOnInit(): void {
+    this.allFields = [
+      ...this.fieldsValidWithData,
+      ...this.otherFieldsValidWithData,
+    ];
     this.registerCustomLanguage();
     this.registerHoverProvider();
     this.registerCompletionProvider();
@@ -27637,8 +27642,9 @@ export class TextFormatComponent implements OnInit {
         const match = lineContent.match(regex);
 
         if (match) {
-          // Generate suggestions from fieldsValidWIthData
-          const suggestions = this.fieldsValidWithData.map((field: any) => ({
+          // Generate suggestions from fieldsValidWithData
+          // const suggestions = this.fieldsValidWithData.map((field: any) => ({
+          const suggestions = this.allFields.map((field: any) => ({
             label: field.name,
             kind: monaco.languages.CompletionItemKind.Variable, // Suggestion type
             insertText: field.name, // Text to insert
