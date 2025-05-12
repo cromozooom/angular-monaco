@@ -26,7 +26,7 @@ type Field = {
 })
 export class TextFormatComponent implements OnInit {
   @ViewChild('editorContainer', { static: true }) editorContainer!: ElementRef;
-  editor!: monaco.editor.IStandaloneCodeEditor;
+  private editorInstance!: monaco.editor.IStandaloneCodeEditor;
 
   // Valid fields
   form0: any = [
@@ -27661,22 +27661,25 @@ export class TextFormatComponent implements OnInit {
   }
 
   initializeEditor(): void {
-    this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
-      value: ` ( GET('wdx_internalid')!=null&& ( GET('wdx_reviewtype').indexOf('Trust')>-1||GET('SPX_DYNAMIC_clientcategory').indexOf('Corporation')>-1 ) ) && ( GET('DYNAMIC_servicetypes')==null||GET('DYNAMIC_servicetypes').indexOf('Financial Planning Transactional (Insurance)')==-1 ) GET('')`,
-      language: 'customLanguage',
-      theme: 'customTheme',
-      wordWrap: 'on',
-      minimap: {
-        enabled: false, // Disable the minimap
-      },
-    });
+    this.editorInstance = monaco.editor.create(
+      this.editorContainer.nativeElement,
+      {
+        value: ` ( GET('wdx_internalid')!=null&& ( GET('wdx_reviewtype').indexOf('Trust')>-1||GET('SPX_DYNAMIC_clientcategory').indexOf('Corporation')>-1 ) ) && ( GET('DYNAMIC_servicetypes')==null||GET('DYNAMIC_servicetypes').indexOf('Financial Planning Transactional (Insurance)')==-1 ) GET('')`,
+        language: 'customLanguage',
+        theme: 'customTheme',
+        wordWrap: 'on',
+        minimap: {
+          enabled: false, // Disable the minimap
+        },
+      }
+    );
 
-    this.editor.onDidChangeModelContent(() => {
-      const code = this.editor.getValue();
+    this.editorInstance.onDidChangeModelContent(() => {
+      const code = this.editorInstance.getValue();
       this.highlightVariables(code);
     });
 
-    this.highlightVariables(this.editor.getValue());
+    this.highlightVariables(this.editorInstance.getValue());
   }
 
   highlightVariables(code: string): void {
@@ -27689,8 +27692,12 @@ export class TextFormatComponent implements OnInit {
       const startIndex = match.index + 5; // Start index of the variable
       const endIndex = startIndex + variable.length; // End index of the variable
 
-      const startPosition = this.editor.getModel()?.getPositionAt(startIndex);
-      const endPosition = this.editor.getModel()?.getPositionAt(endIndex);
+      const startPosition = this.editorInstance
+        .getModel()
+        ?.getPositionAt(startIndex);
+      const endPosition = this.editorInstance
+        .getModel()
+        ?.getPositionAt(endIndex);
 
       if (startPosition && endPosition) {
         decorations.push({
@@ -27720,7 +27727,7 @@ export class TextFormatComponent implements OnInit {
     }
 
     // Update decorations only if they have changed
-    this.currentDecorations = this.editor.deltaDecorations(
+    this.currentDecorations = this.editorInstance.deltaDecorations(
       this.currentDecorations,
       decorations
     );
