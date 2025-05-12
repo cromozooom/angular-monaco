@@ -27649,7 +27649,7 @@ export class TextFormatComponent implements OnInit {
 
   initializeEditor(): void {
     this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
-      value: ` ( GET('wdx_internalid')!=null&& ( GET('wdx_reviewtype').indexOf('Trust')>-1||GET('SPX_DYNAMIC_clientcategory').indexOf('Corporation')>-1 ) ) && ( GET('DYNAMIC_servicetypes')==null||GET('DYNAMIC_servicetypes').indexOf('Financial Planning Transactional (Insurance)')==-1 ) `,
+      value: ` ( GET('wdx_internalid')!=null&& ( GET('wdx_reviewtype').indexOf('Trust')>-1||GET('SPX_DYNAMIC_clientcategory').indexOf('Corporation')>-1 ) ) && ( GET('DYNAMIC_servicetypes')==null||GET('DYNAMIC_servicetypes').indexOf('Financial Planning Transactional (Insurance)')==-1 ) GET('')`,
       language: 'customLanguage',
       theme: 'customTheme',
       wordWrap: 'on',
