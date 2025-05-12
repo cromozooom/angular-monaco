@@ -27642,6 +27642,7 @@ export class TextFormatComponent implements OnInit {
           return { suggestions };
         }
 
+        return null;
         return { suggestions: [] }; // No suggestions if not inside GET('')
       },
     });
