@@ -27420,7 +27420,6 @@ export class TextFormatComponent implements OnInit {
       schemaName: 'wdx_clientjourneystage',
       value: 'wdx_clientjourneystage',
     },
-    { name: null, schemaName: null, value: null },
     {
       name: 'DYNAMIC_userroles',
       schemaName: 'DYNAMIC_userroles',
@@ -27437,7 +27436,7 @@ export class TextFormatComponent implements OnInit {
       schemaName: 'wdx_amldocumentproofnotes',
       value: 'wdx_amldocumentproofnotes',
     },
-    { name: null, schemaName: null, value: null },
+
     {
       name: 'wdx_clientjourneystage',
       schemaName: 'wdx_clientjourneystage',
@@ -27458,7 +27457,7 @@ export class TextFormatComponent implements OnInit {
       schemaName: 'wdx_xdwfield{wdx_contactid}.wdx_lostcomments',
       value: 'wdx_xdwfield{wdx_contactid}.wdx_lostcomments',
     },
-    { name: null, schemaName: null, value: null },
+
     {
       name: 'DYNAMIC_ContactAddressesValid',
       schemaName: 'DYNAMIC_ContactAddressesValid',
