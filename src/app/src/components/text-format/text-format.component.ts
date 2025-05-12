@@ -2,6 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as monaco from 'monaco-editor';
 
+type Field = {
+  name: string;
+  schemaName: string;
+  value: string;
+  type?: string;
+};
+
 @Component({
   selector: 'app-text-format',
   standalone: true,
@@ -27627,7 +27634,7 @@ export class TextFormatComponent implements OnInit {
       triggerCharacters: ["'"], // Trigger suggestions when typing a single quote
       provideCompletionItems: (model, position) => {
         const lineContent = model.getLineContent(position.lineNumber);
-        const regex = /GET\('([^']*)$/; // Match GET('...') up to the cursor position
+        const regex = /GET\('([^']*)'?/g; // Match GET('...') up to the cursor position
         const match = lineContent.match(regex);
 
         if (match) {
